@@ -1,6 +1,10 @@
+-- Завдання 1
+
 CREATE SCHEMA pandemic;
 
 USE pandemic;
+
+-- Завдання 2
 
 CREATE TABLE countries (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,12 +45,16 @@ SELECT countries.id,
 FROM infectious_cases 
 JOIN countries ON infectious_cases.Entity = countries.name AND infectious_cases.Code = countries.code;
 
+-- Завдання 3
+
 SELECT Entity, Code, AVG(Number_rabies) as avg, MIN(Number_rabies) as min, MAX(Number_rabies) as max, SUM(Number_rabies) as sum
 FROM infectious_cases
 WHERE Number_rabies != '' AND Number_rabies IS NOT NULL 
 GROUP BY Entity, Code
 ORDER BY avg DESC
 LIMIT 10;
+
+-- Завдання 4
 
 SET SQL_SAFE_UPDATES = 0;
 
@@ -63,3 +71,16 @@ ALTER TABLE infectious_cases ADD COLUMN year_diff INT;
 UPDATE infectious_cases SET year_diff = YEAR(`current_date`) - YEAR(year_date);
 
 SET SQL_SAFE_UPDATES = 1;
+
+-- Завдання 5
+
+DELIMITER // 
+CREATE FUNCTION get_year_diff(year_value INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    RETURN YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(year_value, '-01-01'), '%Y-%m-%d'));
+END //
+DELIMITER ;
+
+SELECT get_year_diff(1996);
