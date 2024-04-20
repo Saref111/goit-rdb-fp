@@ -47,3 +47,19 @@ WHERE Number_rabies != '' AND Number_rabies IS NOT NULL
 GROUP BY Entity, Code
 ORDER BY avg DESC
 LIMIT 10;
+
+SET SQL_SAFE_UPDATES = 0;
+
+ALTER TABLE infectious_cases ADD COLUMN year_date DATE;
+
+UPDATE infectious_cases SET year_date = STR_TO_DATE(CONCAT(Year, '-01-01'), '%Y-%m-%d');
+
+ALTER TABLE infectious_cases ADD COLUMN `current_date` DATE;
+
+UPDATE infectious_cases SET `current_date` = CURDATE();
+
+ALTER TABLE infectious_cases ADD COLUMN year_diff INT;
+
+UPDATE infectious_cases SET year_diff = YEAR(`current_date`) - YEAR(year_date);
+
+SET SQL_SAFE_UPDATES = 1;
