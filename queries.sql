@@ -40,3 +40,10 @@ SELECT countries.id,
        COALESCE(NULLIF(infectious_cases.Number_cholera_cases, ''), 0)
 FROM infectious_cases 
 JOIN countries ON infectious_cases.Entity = countries.name AND infectious_cases.Code = countries.code;
+
+SELECT Entity, Code, AVG(Number_rabies) as avg, MIN(Number_rabies) as min, MAX(Number_rabies) as max, SUM(Number_rabies) as sum
+FROM infectious_cases
+WHERE Number_rabies != '' AND Number_rabies IS NOT NULL 
+GROUP BY Entity, Code
+ORDER BY avg DESC
+LIMIT 10;
