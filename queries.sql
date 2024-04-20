@@ -3,39 +3,40 @@ CREATE SCHEMA pandemic;
 USE pandemic;
 
 CREATE TABLE countries (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name TEXT NOT NULL,
-    code TEXT NOT NULL
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name TEXT,
+    code TEXT
 );
 
 CREATE TABLE diseases (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name TEXT NOT NULL
-);
-
-CREATE TABLE cases (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     country_id INT,
-    disease_id INT,
     year INT,
-    number_cases INT,
-    FOREIGN KEY (country_id) REFERENCES countries(id),
-    FOREIGN KEY (disease_id) REFERENCES diseases(id)
+    yaws INT,
+    polio INT,
+    guinea_worm INT,
+    rabies INT,
+    malaria INT,
+    hiv INT,
+    tuberculosis INT,
+    smallpox INT,
+    cholera INT,
+    FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
-INSERT INTO countries (name, code)
-SELECT DISTINCT Entity, Code
-FROM infectious_cases;
+INSERT INTO countries (name, code) SELECT DISTINCT Entity, Code FROM infectious_cases;
 
-INSERT INTO diseases (name)
-SELECT DISTINCT Number_yaws
-FROM infectious_cases;
-
-INSERT INTO cases (country_id, disease_id, year, number_cases)
-SELECT c.id,
-       d.id,
-       infectious_cases.Year,
-       COALESCE(NULLIF(CAST(REPLACE(NULLIF(Number_yaws, ''), ',', '') AS UNSIGNED), ''), 0)
-FROM infectious_cases
-JOIN countries c ON c.code = infectious_cases.Code
-JOIN diseases d ON d.name = infectious_cases.Number_yaws;
+INSERT INTO diseases (country_id, year, yaws, polio, guinea_worm, rabies, malaria, hiv, tuberculosis, smallpox, cholera) 
+SELECT countries.id, 
+       infectious_cases.Year, 
+       COALESCE(NULLIF(infectious_cases.Number_yaws, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.polio_cases, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.cases_guinea_worm, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.Number_rabies, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.Number_malaria, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.Number_hiv, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.Number_tuberculosis, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.Number_smallpox, ''), 0), 
+       COALESCE(NULLIF(infectious_cases.Number_cholera_cases, ''), 0)
+FROM infectious_cases 
+JOIN countries ON infectious_cases.Entity = countries.name AND infectious_cases.Code = countries.code;
